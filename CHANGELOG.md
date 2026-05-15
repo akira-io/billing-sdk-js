@@ -4,6 +4,16 @@ All notable changes to `@akira-io/billing-js` are documented here. The format fo
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.5] — 2026-05-15
+
+### Changed
+
+- Republish under a fresh tag after fixing the publish workflow to
+  use node 22 + npm 11+, which is the minimum that implements the
+  OIDC PUT exchange against npmjs.com. No code changes.
+
+[0.1.5]: https://github.com/akira-io/billing-sdk-js/releases/tag/v0.1.5
+
 ## [0.1.4] — 2026-05-15
 
 ### Changed
