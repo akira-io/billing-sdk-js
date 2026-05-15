@@ -189,13 +189,35 @@ export interface OauthExchangePayload {
     code_verifier: string;
 }
 
+export interface OauthExchangeEntitlement {
+    plan_key: string | null;
+    source: string;
+    ends_at: string | null;
+}
+
 export interface OauthExchangeResponse {
     access_token: string;
     token_type: string;
     customer: {
         id: string;
+        email: string;
+        name: string | null;
         product_id: string;
     };
+    entitlement: OauthExchangeEntitlement | null;
+    requires_plan_selection: boolean;
+}
+
+export interface GithubInstallationTokenPayload {
+    installation_id?: number;
+}
+
+export interface GithubInstallationTokenResponse {
+    token: string;
+    expires_at: string;
+    installation_id: number;
+    account_login: string;
+    account_type: string;
 }
 
 export interface PkceChallenge {

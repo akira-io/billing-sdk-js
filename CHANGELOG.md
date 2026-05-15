@@ -4,6 +4,26 @@ All notable changes to `@akira-io/billing-js` are documented here. The format fo
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.8] — 2026-05-16
+
+### Added
+
+- `BillingClient.githubInstallationToken({ installation_id? })` posts
+  `/api/me/github/installation-token` and returns the minted GitHub
+  App installation token (token, expires_at, installation_id,
+  account_login, account_type).
+- Types: `GithubInstallationTokenPayload`,
+  `GithubInstallationTokenResponse`, `OauthExchangeEntitlement`.
+
+### Changed
+
+- `OauthExchangeResponse.customer` now carries `email` and `name`.
+- `OauthExchangeResponse` adds `entitlement: OauthExchangeEntitlement | null`
+  and `requires_plan_selection: boolean` so clients can branch into a
+  plan-picker UI when no free plan auto-grant happened.
+
+[0.1.8]: https://github.com/akira-io/billing-sdk-js/releases/tag/v0.1.8
+
 ## [0.1.7] — 2026-05-15
 
 ### Added

@@ -19,6 +19,8 @@ import type {
     LicenseRefreshPayload,
     LicenseSyncUsagePayload,
     LicenseSyncUsageResponse,
+    GithubInstallationTokenPayload,
+    GithubInstallationTokenResponse,
     OauthExchangePayload,
     OauthExchangeResponse,
     OauthProvidersResponse,
@@ -107,6 +109,16 @@ export class BillingClient {
         const res = await this.signed<OauthExchangeResponse>('POST', '/api/auth/oauth/exchange', payload);
         this.setCustomerToken(res.access_token);
         return res;
+    }
+
+    async githubInstallationToken(
+        payload: GithubInstallationTokenPayload = {},
+    ): Promise<GithubInstallationTokenResponse> {
+        return this.signed<GithubInstallationTokenResponse>(
+            'POST',
+            '/api/me/github/installation-token',
+            payload,
+        );
     }
 
     async entitlements(): Promise<EntitlementsResponse> {
