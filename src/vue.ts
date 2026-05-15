@@ -1,7 +1,8 @@
-import { onUnmounted, ref, watchEffect, type Ref } from 'vue';
+import { computed, onUnmounted, ref, watch, watchEffect, type ComputedRef, type Ref } from 'vue';
 import { fetchPricing, type FetchPricingConfig } from './pricing';
 import { triggerDownload, type DownloadConfig } from './downloads';
-import type { IssuedDownload, PricingPayload } from './types';
+import { defaultInterval, type IntervalKey } from './helpers';
+import type { IssuedDownload, PricingPayload, PricingTier } from './types';
 
 export type UsePricingComposable = {
     data: Ref<PricingPayload | null>;
@@ -46,6 +47,35 @@ export function usePricing(getConfig: () => FetchPricingConfig): UsePricingCompo
     });
 
     return { data, error, isLoading, refresh: run };
+}
+
+export type UseBillingIntervalComposable = {
+    interval: Ref<IntervalKey>;
+    toggle: () => void;
+    set: (next: IntervalKey) => void;
+};
+
+export function useBillingInterval(
+    tiersRef: Ref<PricingTier[] | null | undefined> | ComputedRef<PricingTier[] | null | undefined>,
+): UseBillingIntervalComposable {
+    const interval = ref<IntervalKey>(defaultInterval(tiersRef.value ?? []));
+
+    watch(
+        () => tiersRef.value,
+        (next) => {
+            interval.value = defaultInterval(next ?? []);
+        },
+    );
+
+    function toggle() {
+        interval.value = interval.value === 'monthly' ? 'yearly' : 'monthly';
+    }
+
+    function set(next: IntervalKey) {
+        interval.value = next;
+    }
+
+    return { interval, toggle, set };
 }
 
 export type UseDownloadComposable = {

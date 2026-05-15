@@ -28,6 +28,11 @@
             "import": "./dist/checkout.js",
             "require": "./dist/checkout.cjs"
         },
+        "./helpers": {
+            "types": "./dist/helpers.d.ts",
+            "import": "./dist/helpers.js",
+            "require": "./dist/helpers.cjs"
+        },
         "./react": {
             "types": "./dist/react.d.ts",
             "import": "./dist/react.js",

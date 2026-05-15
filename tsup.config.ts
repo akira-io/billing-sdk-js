@@ -6,6 +6,7 @@ export default defineConfig({
         pricing: 'src/pricing.ts',
         downloads: 'src/downloads.ts',
         checkout: 'src/checkout.ts',
+        helpers: 'src/helpers.ts',
         react: 'src/react.ts',
         vue: 'src/vue.ts',
     },

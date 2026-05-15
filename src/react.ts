@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { fetchPricing, type FetchPricingConfig } from './pricing';
 import { triggerDownload, type DownloadConfig } from './downloads';
-import type { IssuedDownload, PricingPayload } from './types';
+import { defaultInterval, type IntervalKey } from './helpers';
+import type { IssuedDownload, PricingPayload, PricingTier } from './types';
 
 export type UsePricingResult = {
     data: PricingPayload | null;
@@ -44,6 +45,32 @@ export function usePricing(config: FetchPricingConfig): UsePricingResult {
     const refresh = useCallback(() => setTick((t) => t + 1), []);
 
     return { data, error, isLoading, refresh };
+}
+
+export type UseBillingIntervalResult = {
+    interval: IntervalKey;
+    setInterval: (next: IntervalKey) => void;
+    toggle: () => void;
+};
+
+/**
+ * Local state for a monthly/yearly billing toggle. Default is derived
+ * from the tier list (yearly when any tier has one, else monthly).
+ */
+export function useBillingInterval(tiers: PricingTier[] | null | undefined): UseBillingIntervalResult {
+    const initial = useMemo(() => defaultInterval(tiers ?? []), [tiers]);
+    const [interval, setInterval] = useState<IntervalKey>(initial);
+
+    useEffect(() => {
+        setInterval(initial);
+    }, [initial]);
+
+    const toggle = useCallback(
+        () => setInterval((cur) => (cur === 'monthly' ? 'yearly' : 'monthly')),
+        [],
+    );
+
+    return { interval, setInterval, toggle };
 }
 
 export type UseDownloadResult = {
