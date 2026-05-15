@@ -74,6 +74,74 @@ const url = checkoutUrl('https://billing.akira.foundation', 'unified-dev', 'pro_
 
 The billing app handles the rest (guest Stripe Checkout session, redirect, webhook).
 
+## React hooks (`/react`)
+
+```tsx
+import { usePricing, useDownload } from '@akira-io/billing-js/react';
+import { formatPrice } from '@akira-io/billing-js/pricing';
+
+function Pricing() {
+    const { data, isLoading, refresh } = usePricing({
+        baseUrl: 'https://billing.akira.foundation',
+        productKey: 'unified-dev',
+    });
+
+    if (isLoading) return <Skeleton />;
+
+    return data?.tiers.map((tier) => (
+        <Card key={tier.key}>
+            <h3>{tier.name}</h3>
+            {tier.monthly && <p>{formatPrice(tier.monthly.amount, tier.monthly.currency)}/mo</p>}
+            <ul>{tier.features.map((f) => <li key={f.key}>{f.name}</li>)}</ul>
+        </Card>
+    ));
+}
+
+function DownloadButton() {
+    const { trigger, isPending } = useDownload({
+        baseUrl: 'https://billing.akira.foundation',
+        product: 'unified-dev',
+        channel: 'stable',
+        platform: 'macos-arm64',
+    });
+    return <button disabled={isPending} onClick={trigger}>{isPending ? 'Starting…' : 'Download'}</button>;
+}
+```
+
+## Vue composables (`/vue`)
+
+```vue
+<script setup lang="ts">
+import { usePricing, useDownload } from '@akira-io/billing-js/vue';
+import { formatPrice } from '@akira-io/billing-js/pricing';
+
+const { data, isLoading } = usePricing(() => ({
+    baseUrl: 'https://billing.akira.foundation',
+    productKey: 'unified-dev',
+}));
+
+const { trigger, isPending } = useDownload(() => ({
+    baseUrl: 'https://billing.akira.foundation',
+    product: 'unified-dev',
+    channel: 'stable',
+    platform: 'macos-arm64',
+}));
+</script>
+
+<template>
+    <div v-if="isLoading">Loading…</div>
+    <div v-else v-for="tier in data?.tiers ?? []" :key="tier.key">
+        <h3>{{ tier.name }}</h3>
+        <p v-if="tier.monthly">{{ formatPrice(tier.monthly.amount, tier.monthly.currency) }}/mo</p>
+    </div>
+    <button :disabled="isPending" @click="trigger">{{ isPending ? 'Starting…' : 'Download' }}</button>
+</template>
+```
+
+React and Vue are listed as **optional peer dependencies** — install only the
+one your app needs. The core modules (`/pricing`, `/downloads`, `/checkout`)
+have no framework dependency.
+
 ## Bundled types
 
 ```ts

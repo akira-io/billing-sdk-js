@@ -6,6 +6,8 @@ export default defineConfig({
         pricing: 'src/pricing.ts',
         downloads: 'src/downloads.ts',
         checkout: 'src/checkout.ts',
+        react: 'src/react.ts',
+        vue: 'src/vue.ts',
     },
     format: ['esm', 'cjs'],
     dts: true,
@@ -14,4 +16,5 @@ export default defineConfig({
     treeshake: true,
     splitting: false,
     target: 'es2022',
+    external: ['react', 'vue'],
 });

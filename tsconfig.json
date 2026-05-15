@@ -16,6 +16,7 @@
         "sourceMap": true,
         "resolveJsonModule": true,
         "verbatimModuleSyntax": false,
+        "jsx": "react-jsx",
         "rootDir": "src",
         "outDir": "dist"
     },
