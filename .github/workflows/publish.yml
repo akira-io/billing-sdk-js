@@ -39,5 +39,18 @@ jobs:
       - name: Build
         run: pnpm build
 
+      - name: Check if version already published
+        id: version_check
+        run: |
+          NAME=$(node -p "require('./package.json').name")
+          VER=$(node -p "require('./package.json').version")
+          if npm view "$NAME@$VER" version >/dev/null 2>&1; then
+            echo "Already published: $NAME@$VER"
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Publish to npm
+        if: steps.version_check.outputs.skip != 'true'
         run: npm publish --access public --provenance

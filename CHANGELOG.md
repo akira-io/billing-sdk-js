@@ -1,0 +1,52 @@
+# Changelog
+
+All notable changes to `@akira-io/billing-js` are documented here. The format follows
+[Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project adheres to
+[Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [0.1.0] — 2026-05-15
+
+First public release. Ships two surfaces.
+
+### Storefront helpers (browser-safe)
+
+- `fetchPricing`, `formatPrice` — pull a typed `PricingPayload` from
+  `/api/v1/products/{key}/plans` and turn it into render-ready tiers.
+- `downloadUrl`, `issueDownload`, `sendCompletionBeacon`, `triggerDownload` —
+  fetch a signed asset URL, navigate to it, fire the completion beacon.
+- `checkoutUrl` — build a deep link into the hosted subscribe flow.
+- React hooks (`/react`) and Vue composables (`/vue`) — `usePricing`,
+  `useDownload`. Both frameworks are optional peer dependencies.
+- Shared helpers (`/helpers`) — `defaultInterval`, `getActivePrice`,
+  `getCtaProps`, `hasYearly`, `isFreeTier`, `isOneTimeTier`.
+
+### `BillingClient` (`/client`)
+
+Runtime-agnostic HMAC-signed client for trusted environments (Node, Bun,
+Deno, Cloudflare Workers, Next.js route handlers, scripts). Mirrors the
+Go and Rust SDKs:
+
+- OTP login: `requestOtp`, `verifyOtp` (auto-stores the bearer).
+- Customer profile: `customerMe`.
+- License lifecycle: `licenseCheck`, `licenseActivate`, `licenseRefresh`.
+- Entitlements: `entitlements`.
+- Billing portal: `billingPortal`.
+- Usage tracking: `trackUsage` with `check` / `increment` actions.
+- Public verification keys: `publicLicenseKeys` (unauthenticated).
+
+HMAC signatures run through `crypto.subtle`, so the client works in any
+runtime that ships fetch + Web Crypto. The `productSecret` must come from
+the environment and must never reach a browser bundle.
+
+Errors throw `BillingApiError` with `status` and `code` fields populated
+from the server payload.
+
+### Tooling
+
+- Dual ESM + CJS builds via tsup. Tree-shakeable per-module entry points.
+- TypeScript declarations generated alongside JS.
+- npm `Trusted Publishers` workflow via GitHub OIDC — no long-lived
+  `NPM_TOKEN` stored on the repository.
+- Automated `provenance` flag on every CI publish.
+
+[0.1.0]: https://github.com/akira-io/billing-sdk-js/releases/tag/v0.1.0
