@@ -24,9 +24,6 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
           cache: pnpm
 
-      - name: Upgrade npm to OIDC-capable version
-        run: npm install -g npm@latest
-
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
@@ -54,6 +51,6 @@ jobs:
             echo "skip=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Publish to npm
+      - name: Publish to npm (npm 11.5+ via npx, OIDC-capable)
         if: steps.version_check.outputs.skip != 'true'
-        run: npm publish --access public --provenance
+        run: npx -y npm@11 publish --access public --provenance
