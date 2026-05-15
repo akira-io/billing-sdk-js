@@ -4,6 +4,16 @@ All notable changes to `@akira-io/billing-js` are documented here. The format fo
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.4] — 2026-05-15
+
+### Changed
+
+- Republish of 0.1.3 contents. The 0.1.3 tag never reached npm due
+  to CI plumbing issues (missing eslint deps + OIDC config). No
+  code or API changes.
+
+[0.1.4]: https://github.com/akira-io/billing-sdk-js/releases/tag/v0.1.4
+
 ## [0.1.3] — 2026-05-15
 
 ### Added
