@@ -1,4 +1,16 @@
 export * from './types';
+export * from './client-types';
+export { BillingClient, BillingApiError } from './client';
+export type { BillingClientConfig } from './client';
+export {
+    HEADER_NONCE,
+    HEADER_PRODUCT,
+    HEADER_SIGNATURE,
+    HEADER_TIMESTAMP,
+    canonical,
+    newNonce,
+    sign,
+} from './signature';
 export { fetchPricing, formatPrice } from './pricing';
 export type { FetchPricingConfig } from './pricing';
 export { checkoutUrl } from './checkout';

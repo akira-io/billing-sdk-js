@@ -1,10 +1,115 @@
 # @akira-io/billing-js
 
 TypeScript client for the [Akira Billing API](https://github.com/akira-foundation/billing).
-Built for landing pages and SPAs: pricing fetch + transform, download click + beacon
-completion, checkout URL helper. Sister SDKs: [`billing-sdk-go`](https://github.com/akira-io/billing-sdk-go), [`billing-sdk-rust`](https://github.com/akira-io/billing-sdk-rust).
+Two surfaces:
+
+- **Storefront helpers** (`/pricing`, `/downloads`, `/checkout`, `/react`, `/vue`) — browser-safe,
+  no secret required. For landing pages, marketing sites, and SPAs that only call
+  unauthenticated endpoints.
+- **`BillingClient`** (`/client`) — full HMAC-signed client mirroring the
+  [Go](https://github.com/akira-io/billing-sdk-go) and
+  [Rust](https://github.com/akira-io/billing-sdk-rust) SDKs. For trusted runtimes that hold a
+  `productSecret`: Node servers, Next.js route handlers, Cloudflare Workers, Deno, Bun,
+  CLI scripts, controlled webviews. **Never ship the secret to a browser bundle.**
 
 Zero runtime dependencies. Dual ESM + CJS. Tree-shakeable per-module entry points.
+
+## BillingClient (`/client`)
+
+Runtime-agnostic class. Works anywhere `fetch` and `crypto.subtle` exist (Node 18+,
+Bun, Deno, Cloudflare Workers, every modern serverless runtime). Reads the secret
+from your environment, never from `import.meta.env` exposed to a browser bundle.
+
+### Serverless route handler — instantiate per request
+
+```ts
+import { BillingClient } from '@akira-io/billing-js/client';
+
+// app/api/login/route.ts (Next.js route handler — also fits Vercel, Netlify, CF Workers)
+export async function POST(req: Request) {
+    const client = new BillingClient({
+        baseUrl: process.env.AKIRA_BILLING_URL!,
+        productSlug: 'unified-dev',
+        productSecret: process.env.AKIRA_BILLING_SECRET!,
+    });
+    const { email, code } = await req.json();
+    const result = await client.verifyOtp({ email, code });
+    // store result.access_token in a session cookie
+    return Response.json(result);
+}
+```
+
+### Long-lived server — instantiate once, reuse
+
+```ts
+import { BillingClient } from '@akira-io/billing-js/client';
+import express from 'express';
+
+const billing = new BillingClient({
+    baseUrl: process.env.AKIRA_BILLING_URL!,
+    productSlug: 'unified-dev',
+    productSecret: process.env.AKIRA_BILLING_SECRET!,
+});
+
+const app = express();
+app.post('/login', async (req, res) => {
+    const result = await billing.verifyOtp(req.body);
+    res.json(result);
+});
+```
+
+### Per-customer token
+
+After OTP verify the SDK stores the bearer on the instance. For follow-up
+authenticated calls, either reuse the same client or call `setCustomerToken`:
+
+```ts
+client.setCustomerToken(req.cookies.akira_token);
+const me = await client.customerMe();
+const features = await client.entitlements();
+```
+
+### Available methods
+
+| Method | Endpoint |
+|---|---|
+| `requestOtp(payload)` | `POST /api/auth/customer/otp/request` |
+| `verifyOtp(payload)` | `POST /api/auth/customer/otp/verify` (auto-sets bearer) |
+| `customerMe()` | `GET /api/me` |
+| `licenseCheck(payload)` | `POST /api/licenses/check` |
+| `licenseActivate(payload)` | `POST /api/licenses/activate` |
+| `licenseRefresh(payload)` | `POST /api/licenses/refresh` |
+| `entitlements()` | `GET /api/me/entitlements` |
+| `billingPortal(returnUrl)` | `GET /api/billing/portal` |
+| `trackUsage(payload)` | `POST /api/me/usage` |
+| `publicLicenseKeys()` | `GET /api/v1/license-keys/public` (no HMAC) |
+
+### Errors
+
+Non-2xx responses throw `BillingApiError` with `status` and `code` fields populated
+from the server error payload.
+
+```ts
+import { BillingApiError } from '@akira-io/billing-js/client';
+
+try {
+    await client.licenseActivate({ ... });
+} catch (error) {
+    if (error instanceof BillingApiError && error.code === 'no_active_plan') {
+        // redirect to upgrade
+    }
+    throw error;
+}
+```
+
+### Custom fetch
+
+Pass `fetcher` to override `globalThis.fetch` (custom retry, observability, etc):
+
+```ts
+new BillingClient({ baseUrl, productSlug, productSecret, fetcher: myFetch });
+```
+
 
 ## Install
 
