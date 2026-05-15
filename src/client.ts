@@ -19,6 +19,9 @@ import type {
     LicenseRefreshPayload,
     LicenseSyncUsagePayload,
     LicenseSyncUsageResponse,
+    OauthExchangePayload,
+    OauthExchangeResponse,
+    OauthProvidersResponse,
     OtpRequestPayload,
     OtpVerifyPayload,
     OtpVerifyResponse,
@@ -94,6 +97,16 @@ export class BillingClient {
 
     async licenseSyncUsage(payload: LicenseSyncUsagePayload): Promise<LicenseSyncUsageResponse> {
         return this.signed<LicenseSyncUsageResponse>('POST', '/api/licenses/sync-usage', payload);
+    }
+
+    async listOauthProviders(product: string): Promise<OauthProvidersResponse> {
+        return this.signed<OauthProvidersResponse>('GET', `/api/v1/products/${encodeURIComponent(product)}/auth/providers`);
+    }
+
+    async exchangeOauthCode(payload: OauthExchangePayload): Promise<OauthExchangeResponse> {
+        const res = await this.signed<OauthExchangeResponse>('POST', '/api/auth/oauth/exchange', payload);
+        this.setCustomerToken(res.access_token);
+        return res;
     }
 
     async entitlements(): Promise<EntitlementsResponse> {

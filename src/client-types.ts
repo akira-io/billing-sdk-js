@@ -170,3 +170,46 @@ export interface LicenseSyncUsageResponse {
     applied: Record<string, number>;
     serial: number;
 }
+
+export type OauthProvider = 'google' | 'github' | 'apple' | 'microsoft' | 'gitlab' | 'bitbucket';
+
+export interface OauthProviderInfo {
+    provider: OauthProvider;
+    label: string;
+    scopes: string[];
+}
+
+export interface OauthProvidersResponse {
+    product: string;
+    providers: OauthProviderInfo[];
+}
+
+export interface OauthExchangePayload {
+    code: string;
+    code_verifier: string;
+}
+
+export interface OauthExchangeResponse {
+    access_token: string;
+    token_type: string;
+    customer: {
+        id: string;
+        product_id: string;
+    };
+}
+
+export interface PkceChallenge {
+    verifier: string;
+    challenge: string;
+    method: 'S256';
+}
+
+export interface BuildOauthInitUrlOptions {
+    baseUrl: string;
+    provider: OauthProvider;
+    product: string;
+    redirectUri: string;
+    codeChallenge: string;
+    codeChallengeMethod?: 'S256' | 'plain';
+    state?: string;
+}
