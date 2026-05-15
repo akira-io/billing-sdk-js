@@ -75,10 +75,18 @@ export function isInGrace(
 }
 
 export function canUseUpdate(payload: LicenseSnapshotPayload, releaseDate: string | Date): boolean {
-    if (!payload.paid_up_until) return true;
     const release = releaseDate instanceof Date ? releaseDate : new Date(releaseDate);
-    const paidUp = new Date(payload.paid_up_until);
-    return release.getTime() <= paidUp.getTime();
+
+    const paidUpMs = payload.paid_up_until ? new Date(payload.paid_up_until).getTime() : null;
+    const fallbackMs = payload.fallback_release_date
+        ? new Date(payload.fallback_release_date).getTime()
+        : null;
+
+    if (paidUpMs === null && fallbackMs === null) return true;
+
+    const effective = Math.max(paidUpMs ?? -Infinity, fallbackMs ?? -Infinity);
+    const windowMs = (payload.updates_window_days ?? 0) * 86_400_000;
+    return release.getTime() <= effective + windowMs;
 }
 
 export function periodResetAt(payload: LicenseSnapshotPayload, feature: string): Date | null {

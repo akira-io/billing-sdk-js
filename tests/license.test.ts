@@ -115,14 +115,32 @@ describe('canUseUpdate', () => {
         expect(canUseUpdate(p, '2027-01-01T00:00:00Z')).toBe(true);
     });
 
-    it('blocks releases after paid_up_until', () => {
+    it('blocks releases after paid_up_until when no window', () => {
         const p = basePayload();
         expect(canUseUpdate(p, '2028-01-01T00:00:00Z')).toBe(false);
     });
 
-    it('allows any release when paid_up_until is null', () => {
-        const p = basePayload({ paid_up_until: null });
+    it('allows any release when paid_up_until and fallback are null', () => {
+        const p = basePayload({ paid_up_until: null, fallback_release_date: null });
         expect(canUseUpdate(p, '2099-01-01T00:00:00Z')).toBe(true);
+    });
+
+    it('extends allowed cutoff by updates_window_days', () => {
+        const p = basePayload({
+            paid_up_until: '2027-01-01T00:00:00Z',
+            fallback_release_date: '2027-01-01T00:00:00Z',
+            updates_window_days: 365,
+        });
+        expect(canUseUpdate(p, '2027-06-01T00:00:00Z')).toBe(true);
+        expect(canUseUpdate(p, '2028-06-01T00:00:00Z')).toBe(false);
+    });
+
+    it('uses fallback_release_date when greater than paid_up_until', () => {
+        const p = basePayload({
+            paid_up_until: '2026-01-01T00:00:00Z',
+            fallback_release_date: '2027-12-31T00:00:00Z',
+        });
+        expect(canUseUpdate(p, '2027-06-01T00:00:00Z')).toBe(true);
     });
 });
 

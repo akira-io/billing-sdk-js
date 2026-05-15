@@ -154,6 +154,8 @@ export interface LicenseSnapshotPayload {
     valid_until: string;
     paid_up_until?: string | null;
     fallback_release_date?: string | null;
+    updates_window_days?: number | null;
+    offline_grace_days?: number | null;
 }
 
 export interface LicenseSyncUsagePayload {
