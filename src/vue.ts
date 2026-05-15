@@ -1,4 +1,4 @@
-import { computed, onUnmounted, ref, watch, watchEffect, type ComputedRef, type Ref } from 'vue';
+import { onUnmounted, ref, watch, watchEffect, type ComputedRef, type Ref } from 'vue';
 import { fetchPricing, type FetchPricingConfig } from './pricing';
 import { triggerDownload, type DownloadConfig } from './downloads';
 import { defaultInterval, type IntervalKey } from './helpers';

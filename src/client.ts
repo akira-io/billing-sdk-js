@@ -157,7 +157,7 @@ export class BillingClient {
 
     private async parseResponse<T>(res: Response): Promise<T> {
         if (!res.ok) {
-            let code = '';
+            let code: string;
             try {
                 const parsed = (await res.json()) as { error?: string };
                 code = parsed?.error ?? '';
