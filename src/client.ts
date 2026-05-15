@@ -103,6 +103,10 @@ export class BillingClient {
         return this.signed<UsageResponse>('POST', '/api/me/usage', payload);
     }
 
+    async trackAnonymousUsage(payload: UsagePayload): Promise<UsageResponse> {
+        return this.signed<UsageResponse>('POST', '/api/v1/usage/anonymous', payload);
+    }
+
     async publicLicenseKeys(): Promise<LicensePublicKeysResponse> {
         return this.unsigned<LicensePublicKeysResponse>('GET', '/api/v1/license-keys/public');
     }
