@@ -17,6 +17,8 @@ import type {
     LicenseCheckResponse,
     LicensePublicKeysResponse,
     LicenseRefreshPayload,
+    LicenseSyncUsagePayload,
+    LicenseSyncUsageResponse,
     OtpRequestPayload,
     OtpVerifyPayload,
     OtpVerifyResponse,
@@ -88,6 +90,10 @@ export class BillingClient {
 
     async licenseRefresh(payload: LicenseRefreshPayload): Promise<LicenseActivateResponse> {
         return this.signed<LicenseActivateResponse>('POST', '/api/licenses/refresh', payload);
+    }
+
+    async licenseSyncUsage(payload: LicenseSyncUsagePayload): Promise<LicenseSyncUsageResponse> {
+        return this.signed<LicenseSyncUsageResponse>('POST', '/api/licenses/sync-usage', payload);
     }
 
     async entitlements(): Promise<EntitlementsResponse> {

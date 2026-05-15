@@ -113,6 +113,7 @@ export interface UsagePayload {
     date: string;
     device_fp: string;
     action: 'check' | 'increment';
+    count?: number;
     platform?: string;
     device_type?: string;
     app_version?: string;
@@ -121,5 +122,49 @@ export interface UsagePayload {
 export interface UsageResponse {
     count: number;
     limit: number | null;
+    period?: string;
     allowed: boolean;
+}
+
+export type LicensingMode = 'offline_snapshot' | 'online_realtime';
+
+export type UsageFeatureState =
+    | { type: 'bool'; enabled: boolean }
+    | {
+          type: 'counter';
+          allowance: number;
+          period: 'daily' | 'weekly' | 'monthly' | 'yearly';
+          period_start: string;
+          period_end: string;
+          consumed_at_issue: number;
+      };
+
+export interface LicenseSnapshotPayload {
+    v?: number;
+    key_id: string;
+    customer_id: string;
+    product_key: string;
+    plan_key: string;
+    licensing_mode?: LicensingMode;
+    features: Record<string, boolean>;
+    usage?: Record<string, UsageFeatureState>;
+    fingerprint_hash: string;
+    serial?: number;
+    issued_at: string;
+    valid_until: string;
+    paid_up_until?: string | null;
+    fallback_release_date?: string | null;
+}
+
+export interface LicenseSyncUsagePayload {
+    product: string;
+    fingerprint: string;
+    serial: number;
+    deltas: Record<string, number>;
+}
+
+export interface LicenseSyncUsageResponse {
+    license: SignedLicense;
+    applied: Record<string, number>;
+    serial: number;
 }

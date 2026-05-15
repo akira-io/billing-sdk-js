@@ -4,6 +4,23 @@ All notable changes to `@akira-io/billing-js` are documented here. The format fo
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.3] — 2026-05-15
+
+### Added
+
+- New `license` subpath export with helpers for `offline_snapshot`
+  products: `decodeLicense`, `verifyLicense` (Ed25519 via Web Crypto),
+  `computeRemaining`, `isExpired`, `isInGrace`, `canUseUpdate`,
+  `periodResetAt`.
+- `BillingClient.licenseSyncUsage()` POST /api/licenses/sync-usage to
+  apply local usage deltas and receive a re-signed snapshot.
+- `UsagePayload.count?: number` for variable-count realtime tracking
+  (e.g. AI token usage).
+- Types: `LicensingMode`, `UsageFeatureState`, `LicenseSnapshotPayload`,
+  `LicenseSyncUsagePayload`, `LicenseSyncUsageResponse`.
+
+[0.1.3]: https://github.com/akira-io/billing-sdk-js/releases/tag/v0.1.3
+
 ## [0.1.2] — 2026-05-15
 
 ### Added

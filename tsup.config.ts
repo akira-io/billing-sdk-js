@@ -8,6 +8,7 @@ export default defineConfig({
         downloads: 'src/downloads.ts',
         checkout: 'src/checkout.ts',
         helpers: 'src/helpers.ts',
+        license: 'src/license.ts',
         react: 'src/react.ts',
         vue: 'src/vue.ts',
     },

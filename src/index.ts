@@ -30,3 +30,14 @@ export {
     isOneTimeTier,
 } from './helpers';
 export type { CtaProps, CtaOptions, FormattedPrice, IntervalKey } from './helpers';
+export {
+    canUseUpdate,
+    computeRemaining,
+    decodeLicense,
+    isExpired,
+    isInGrace,
+    isUnlimited,
+    periodResetAt,
+    verifyLicense,
+} from './license';
+export type { DecodedLicense } from './license';

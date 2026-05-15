@@ -79,9 +79,10 @@ const features = await client.entitlements();
 | `licenseCheck(payload)` | `POST /api/licenses/check` |
 | `licenseActivate(payload)` | `POST /api/licenses/activate` |
 | `licenseRefresh(payload)` | `POST /api/licenses/refresh` |
+| `licenseSyncUsage(payload)` | `POST /api/licenses/sync-usage` (offline_snapshot mode) |
 | `entitlements()` | `GET /api/me/entitlements` |
 | `billingPortal(returnUrl)` | `GET /api/billing/portal` |
-| `trackUsage(payload)` | `POST /api/me/usage` |
+| `trackUsage(payload)` | `POST /api/me/usage` (variable `count` for tokens/units) |
 | `publicLicenseKeys()` | `GET /api/v1/license-keys/public` (no HMAC) |
 
 ### Errors
@@ -167,6 +168,75 @@ document.querySelector('#download-arm')!.addEventListener('click', () =>
 
 Need more control? `issueDownload` returns the payload without redirecting; `downloadUrl`
 just builds the endpoint URL; `sendCompletionBeacon` ships the beacon on its own.
+
+## Licensing modes
+
+The server tags every product with a `licensing_mode`:
+
+| Mode | When to use | Client flow |
+|---|---|---|
+| `offline_snapshot` | Desktop / IDE-style apps. Long-lived entitlement, infrequent usage events. | Refresh signed snapshot, decrement local counter, sync deltas periodically. |
+| `online_realtime` | Pay-per-unit (AI tokens, API calls). Hard caps + accurate billing. | Pre-check budget + post-commit actual `count`. |
+
+### Offline snapshot helpers (`/license`)
+
+```ts
+import {
+    decodeLicense,
+    verifyLicense,
+    computeRemaining,
+    isExpired,
+    isInGrace,
+    canUseUpdate,
+    periodResetAt,
+} from '@akira-io/billing-js/license';
+
+const { license } = await client.licenseRefresh({ product: 'maintainer', fingerprint });
+const decoded = decodeLicense(license);
+
+const pub = await client.publicLicenseKeys();
+const ok = await verifyLicense(license, pub.keys[0].public_key_base64);
+if (!ok) throw new Error('forged license');
+
+// Pre-run gate
+const remaining = computeRemaining(decoded.payload, 'agent_run', localConsumed);
+if (remaining === 0) throw new Error('limit reached');
+
+// Background sync
+await client.licenseSyncUsage({
+    product: 'maintainer',
+    fingerprint,
+    serial: decoded.payload.serial ?? 0,
+    deltas: { agent_run: 3 },
+});
+```
+
+### Online realtime (variable `count`)
+
+```ts
+// Pre-check budget for an AI prompt
+const pre = await client.trackUsage({
+    product: 'aisite',
+    feature: 'llm_tokens',
+    device_fp: deviceFingerprint,
+    date: '2026-05-15',
+    action: 'check',
+    count: 4000, // max_tokens estimate
+});
+if (!pre.allowed) throw new Error('budget exhausted');
+
+const response = await openai.chat.completions.create({ ... });
+
+// Post-commit actuals
+await client.trackUsage({
+    product: 'aisite',
+    feature: 'llm_tokens',
+    device_fp: deviceFingerprint,
+    date: '2026-05-15',
+    action: 'increment',
+    count: response.usage.total_tokens,
+});
+```
 
 ## Checkout
 
