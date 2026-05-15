@@ -1,0 +1,72 @@
+{
+    "name": "@akira-io/billing-js",
+    "version": "0.1.0",
+    "description": "TypeScript client for the Akira Billing API. Pricing, downloads, checkout helpers for landing pages and web apps.",
+    "license": "MIT",
+    "type": "module",
+    "main": "./dist/index.cjs",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.js",
+            "require": "./dist/index.cjs"
+        },
+        "./pricing": {
+            "types": "./dist/pricing.d.ts",
+            "import": "./dist/pricing.js",
+            "require": "./dist/pricing.cjs"
+        },
+        "./downloads": {
+            "types": "./dist/downloads.d.ts",
+            "import": "./dist/downloads.js",
+            "require": "./dist/downloads.cjs"
+        },
+        "./checkout": {
+            "types": "./dist/checkout.d.ts",
+            "import": "./dist/checkout.js",
+            "require": "./dist/checkout.cjs"
+        }
+    },
+    "files": [
+        "dist",
+        "README.md",
+        "LICENSE"
+    ],
+    "sideEffects": false,
+    "scripts": {
+        "build": "tsup",
+        "dev": "tsup --watch",
+        "test": "vitest run",
+        "test:watch": "vitest",
+        "typecheck": "tsc --noEmit",
+        "lint": "eslint src tests",
+        "prepublishOnly": "pnpm build && pnpm test && pnpm typecheck"
+    },
+    "devDependencies": {
+        "@types/node": "^22.10.2",
+        "tsup": "^8.3.5",
+        "typescript": "^5.7.2",
+        "vitest": "^2.1.8"
+    },
+    "engines": {
+        "node": ">=18"
+    },
+    "keywords": [
+        "akira",
+        "billing",
+        "stripe",
+        "pricing",
+        "downloads",
+        "sdk"
+    ],
+    "homepage": "https://github.com/akira-io/billing-sdk-js",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/akira-io/billing-sdk-js.git"
+    },
+    "bugs": {
+        "url": "https://github.com/akira-io/billing-sdk-js/issues"
+    }
+}
