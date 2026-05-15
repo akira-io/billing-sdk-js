@@ -113,6 +113,9 @@ export interface UsagePayload {
     date: string;
     device_fp: string;
     action: 'check' | 'increment';
+    platform?: string;
+    device_type?: string;
+    app_version?: string;
 }
 
 export interface UsageResponse {
