@@ -1,6 +1,6 @@
 {
     "name": "@akira-io/billing-js",
-    "version": "0.1.9",
+    "version": "0.2.0",
     "description": "TypeScript client for the Akira Billing API. Pricing, downloads, checkout helpers for landing pages and web apps.",
     "license": "MIT",
     "type": "module",

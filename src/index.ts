@@ -46,3 +46,21 @@ export {
     generateOauthState,
     generatePkceChallenge,
 } from './oauth';
+export { computeState, trialDaysLeft } from './lifecycle';
+export type { LicenseState } from './lifecycle';
+export { Gate, GateDeniedError, isGateDenied } from './gate';
+export type {
+    FeatureAccess,
+    GateOptions,
+    LicenseLoader,
+    LoadedLicense,
+    LocalConsumptionFn,
+} from './gate';
+export { MemoryBuffer, UsageTracker } from './usage';
+export type {
+    RefreshHandlerFn,
+    SerialProviderFn,
+    SyncUsageFn,
+    UsageBuffer,
+    UsageTrackerOptions,
+} from './usage';

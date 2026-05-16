@@ -4,6 +4,24 @@ All notable changes to `@akira-io/billing-js` are documented here. The format fo
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] — 2026-05-16
+
+### Added
+
+- `Gate` class (`gate.ts`) bundling verify + lifecycle state + `computeRemaining`
+  behind a single `check(feature)` call. `require(feature)` throws a typed
+  `GateDeniedError`. Configurable via `GateOptions { loader, localConsumption?,
+  graceWindowMs?, now? }`. `isGateDenied(err)` helper for type narrowing.
+- `FeatureAccess` result type with `allowed`, `hasFeature`, `unlimited`,
+  `remaining`, `reason`, `plan`, `state`.
+- `LicenseState` string union (`'none'|'invalid'|'active'|'trialing'|'grace'|'expired'`)
+  plus `computeState(payload, graceWindowMs, now)` and
+  `trialDaysLeft(payload, now)`. Trial detected via feature `__trial=true` or
+  plan key suffix `:trial`.
+- `UsageTracker` (`usage.ts`) with `UsageBuffer` interface (`add`, `drain`,
+  `restore`) for buffered counter sync. `track`, `flush`, `start`, `stop`
+  methods; default 5min interval. `MemoryBuffer` reference impl.
+
 ## [0.1.8] — 2026-05-16
 
 ### Added
