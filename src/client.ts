@@ -73,6 +73,14 @@ export class BillingClient {
         this.customerToken = token;
     }
 
+    getBaseUrl(): string {
+        return this.baseUrl;
+    }
+
+    getProductSlug(): string {
+        return this.productSlug;
+    }
+
     async requestOtp(payload: OtpRequestPayload): Promise<void> {
         await this.signed('POST', '/api/auth/customer/otp/request', payload);
     }

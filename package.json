@@ -1,6 +1,6 @@
 {
     "name": "@akira-io/billing-js",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "description": "TypeScript client for the Akira Billing API. Pricing, downloads, checkout helpers for landing pages and web apps.",
     "license": "MIT",
     "type": "module",
@@ -57,6 +57,26 @@
             "types": "./dist/vue.d.ts",
             "import": "./dist/vue.js",
             "require": "./dist/vue.cjs"
+        },
+        "./loopback": {
+            "types": "./dist/loopback.d.ts",
+            "import": "./dist/loopback.js",
+            "require": "./dist/loopback.cjs"
+        },
+        "./desktop": {
+            "types": "./dist/desktop.d.ts",
+            "import": "./dist/desktop.js",
+            "require": "./dist/desktop.cjs"
+        },
+        "./desktop/react": {
+            "types": "./dist/desktop-react.d.ts",
+            "import": "./dist/desktop-react.js",
+            "require": "./dist/desktop-react.cjs"
+        },
+        "./desktop/vue": {
+            "types": "./dist/desktop-vue.d.ts",
+            "import": "./dist/desktop-vue.js",
+            "require": "./dist/desktop-vue.cjs"
         }
     },
     "peerDependencies": {
