@@ -139,6 +139,13 @@ export class BillingClient {
         return this.signed<EntitlementsResponse>('GET', '/api/me/entitlements');
     }
 
+    async customerFeatures(product: string): Promise<{ product: string; features: string[] }> {
+        return this.signed<{ product: string; features: string[] }>(
+            'GET',
+            `/api/me/features?product=${encodeURIComponent(product)}`,
+        );
+    }
+
     async billingPortal(returnUrl: string): Promise<BillingPortalResponse> {
         const path = `/api/billing/portal?return_url=${encodeURIComponent(returnUrl)}`;
         return this.signed<BillingPortalResponse>('GET', path);
