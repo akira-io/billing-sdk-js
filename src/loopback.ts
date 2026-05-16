@@ -50,7 +50,7 @@ export async function loopbackLogin(
         await opts.openBrowser(authUrl);
     } catch (e) {
         server.close();
-        throw new Error(`loopback: open browser failed — ${(e as Error).message}`);
+        throw new Error(`loopback: open browser failed — ${(e as Error).message}`, { cause: e });
     }
 
     let result: { code: string; state: string };
