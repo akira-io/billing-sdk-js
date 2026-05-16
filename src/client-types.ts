@@ -3,6 +3,7 @@ export interface OtpRequestPayload {
     device_fp?: string;
     platform?: string;
     app_version?: string;
+    product_key?: string;
 }
 
 export interface OtpVerifyPayload {

@@ -1,3 +1,4 @@
+export { checkoutUrl } from './checkout';
 export { openBrowser } from './browser';
 export { deviceFingerprint } from './fingerprint';
 export type { DeviceFingerprint } from './fingerprint';
