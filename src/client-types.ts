@@ -220,6 +220,30 @@ export interface GithubInstallationTokenResponse {
     account_type: string;
 }
 
+export interface GithubAppInfo {
+    slug: string;
+    install_url: string;
+}
+
+export interface GithubUserSummary {
+    id: number;
+    login: string;
+}
+
+export interface GithubUserInstallation {
+    id: number;
+    html_url: string;
+    account_id: number;
+    account_login: string;
+    account_type: string;
+    target_type: string;
+}
+
+export interface GithubUserInstallationsResponse {
+    user: GithubUserSummary;
+    installations: GithubUserInstallation[];
+}
+
 export interface PkceChallenge {
     verifier: string;
     challenge: string;

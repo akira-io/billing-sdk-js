@@ -19,8 +19,10 @@ import type {
     LicenseRefreshPayload,
     LicenseSyncUsagePayload,
     LicenseSyncUsageResponse,
+    GithubAppInfo,
     GithubInstallationTokenPayload,
     GithubInstallationTokenResponse,
+    GithubUserInstallationsResponse,
     OauthExchangePayload,
     OauthExchangeResponse,
     OauthProvidersResponse,
@@ -121,6 +123,10 @@ export class BillingClient {
         );
     }
 
+    async meGithubInstallations(): Promise<GithubUserInstallationsResponse> {
+        return this.signed<GithubUserInstallationsResponse>('GET', '/api/me/github/installations');
+    }
+
     async entitlements(): Promise<EntitlementsResponse> {
         return this.signed<EntitlementsResponse>('GET', '/api/me/entitlements');
     }
@@ -140,6 +146,10 @@ export class BillingClient {
 
     async publicLicenseKeys(): Promise<LicensePublicKeysResponse> {
         return this.unsigned<LicensePublicKeysResponse>('GET', '/api/v1/license-keys/public');
+    }
+
+    async githubAppInfo(): Promise<GithubAppInfo> {
+        return this.unsigned<GithubAppInfo>('GET', '/api/v1/github/app');
     }
 
     private async signed<T = unknown>(method: string, path: string, body?: unknown): Promise<T> {
