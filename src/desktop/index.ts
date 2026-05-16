@@ -1,5 +1,8 @@
 export { checkoutUrl } from './checkout';
 export { openBrowser } from './browser';
+export { TokenCipher, generateKey } from './cipher';
+export { KeyStore } from './keystore';
+export type { KeyStoreOptions } from './keystore';
 export { deviceFingerprint } from './fingerprint';
 export type { DeviceFingerprint } from './fingerprint';
 export { TokenKeyring } from './keyring';
