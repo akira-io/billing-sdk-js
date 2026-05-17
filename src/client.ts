@@ -142,7 +142,7 @@ export class BillingClient {
     async customerFeatures(product: string): Promise<{ product: string; features: string[] }> {
         return this.signed<{ product: string; features: string[] }>(
             'GET',
-            `/api/me/features?product=${encodeURIComponent(product)}`,
+            `/api/me/features/${encodeURIComponent(product)}`,
         );
     }
 
