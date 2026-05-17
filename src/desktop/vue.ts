@@ -1,4 +1,4 @@
-import { onBeforeUnmount, ref, type Ref } from 'vue';
+import { computed, onBeforeUnmount, ref, type ComputedRef, type Ref } from 'vue';
 
 import type { AuthController, AuthStatusState } from './use-auth';
 
@@ -28,4 +28,18 @@ export function useDesktopAuth(controller: AuthController): UseDesktopAuthResult
         oauthLogin: async (provider) => { await controller.oauthLogin(provider); },
         logout: () => controller.logout(),
     };
+}
+
+export function useFeatures(controller: AuthController): ComputedRef<string[]> {
+    const status = ref<AuthStatusState>(controller.snapshot());
+    const unsubscribe = controller.subscribe((next) => {
+        status.value = next;
+    });
+    onBeforeUnmount(() => unsubscribe());
+    return computed(() => (status.value.state === 'authenticated' ? status.value.features : []));
+}
+
+export function useFeature(controller: AuthController, key: string): ComputedRef<boolean> {
+    const features = useFeatures(controller);
+    return computed(() => features.value.includes(key));
 }

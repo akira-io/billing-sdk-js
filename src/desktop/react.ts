@@ -27,3 +27,14 @@ export function useDesktopAuth(controller: AuthController): UseDesktopAuthResult
         logout: () => controller.logout(),
     }), [controller, status]);
 }
+
+export function useFeatures(controller: AuthController): string[] {
+    const [status, setStatus] = useState<AuthStatusState>(controller.snapshot());
+    useEffect(() => controller.subscribe(setStatus), [controller]);
+    return status.state === 'authenticated' ? status.features : [];
+}
+
+export function useFeature(controller: AuthController, key: string): boolean {
+    const features = useFeatures(controller);
+    return useMemo(() => features.includes(key), [features, key]);
+}

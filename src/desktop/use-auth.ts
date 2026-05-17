@@ -6,7 +6,7 @@ import type { SessionStore } from './session';
 export type AuthStatusState =
     | { state: 'loading' }
     | { state: 'guest' }
-    | { state: 'authenticated'; customer: Customer; licensed: boolean };
+    | { state: 'authenticated'; customer: Customer; licensed: boolean; features: string[] };
 
 export interface AuthControllerOptions {
     client: BillingClient;
@@ -52,10 +52,11 @@ export class AuthController {
         }
         try {
             const customer = await this.opts.client.customerMe();
+            const features = await this.fetchFeatures();
             const licensed = this.opts.checkLicense
                 ? await this.opts.checkLicense(this.opts.client)
-                : await this.runDefaultLicenseCheck();
-            this.emit({ state: 'authenticated', customer, licensed });
+                : features.length > 0 || (await this.runDefaultLicenseCheck());
+            this.emit({ state: 'authenticated', customer, licensed, features });
         } catch (e) {
             if ((e as { status?: number }).status === 401) {
                 await this.opts.session.clear(this.opts.client);
@@ -63,6 +64,15 @@ export class AuthController {
                 return;
             }
             throw e;
+        }
+    }
+
+    private async fetchFeatures(): Promise<string[]> {
+        try {
+            const resp = await this.opts.client.customerFeatures(this.opts.product);
+            return resp.features ?? [];
+        } catch {
+            return [];
         }
     }
 
