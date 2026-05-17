@@ -209,8 +209,8 @@ export class BillingClient {
         if (!res.ok) {
             let code: string;
             try {
-                const parsed = (await res.json()) as { error?: string };
-                code = parsed?.error ?? '';
+                const parsed = (await res.json()) as { error?: string; message?: string };
+                code = parsed?.error ?? parsed?.message ?? '';
             } catch {
                 try {
                     code = await res.text();
