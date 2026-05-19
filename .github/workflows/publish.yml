@@ -1,12 +1,13 @@
-name: Publish
+name: publish
 
 on:
   push:
     tags:
-      - 'v*'
+      - "v[0-9]+.[0-9]+.[0-9]+"
+      - "v[0-9]+.[0-9]+.[0-9]+-*"
 
 permissions:
-  contents: write
+  contents: read
   id-token: write
 
 jobs:
@@ -14,8 +15,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - uses: pnpm/action-setup@v4
         with:
@@ -23,13 +22,9 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '22'
-          registry-url: 'https://registry.npmjs.org'
+          node-version: "22"
+          registry-url: "https://registry.npmjs.org"
           cache: pnpm
-
-      - name: Extract version from tag
-        id: version
-        run: echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -46,29 +41,6 @@ jobs:
       - name: Build
         run: pnpm build
 
-      - name: Update package.json version
-        run: |
-          node -e "
-            const pkg = require('./package.json');
-            pkg.version = '${{ steps.version.outputs.version }}';
-            require('fs').writeFileSync('./package.json', JSON.stringify(pkg, null, 2) + '\n');
-          "
-
-      - name: Promote Unreleased to version
-        run: |
-          DATE=$(date -u +%Y-%m-%d)
-          sed -i -E "s/^## \[?[Uu]nreleased\]?/## [${{ steps.version.outputs.version }}] - $DATE/" CHANGELOG.md
-
-      - name: Commit changelog and package
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add CHANGELOG.md package.json
-          git commit -m "chore: release ${{ github.ref_name }}" || true
-
-      - name: Push changelog and version
-        run: git push origin HEAD:main || true
-
       - name: Check if version already published
         id: version_check
         run: |
@@ -81,25 +53,6 @@ jobs:
             echo "skip=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Publish to npm (npm 11.5+ via npx, OIDC-capable)
+      - name: Publish to npm
         if: steps.version_check.outputs.skip != 'true'
         run: npx -y npm@11 publish --access public --provenance
-
-      - name: Extract release notes
-        id: notes
-        run: |
-          {
-            echo 'body<<EOF'
-            awk '/^## \[?v?${{ steps.version.outputs.version }}/,/^## \[?v?/' CHANGELOG.md | head -n -1
-            echo 'EOF'
-          } >> $GITHUB_OUTPUT
-
-      - name: Create GitHub Release
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release delete "${{ github.ref_name }}" --yes 2>/dev/null || true
-          gh release create "${{ github.ref_name }}" \
-            --title "${{ github.ref_name }}" \
-            --notes "${{ steps.notes.outputs.body }}" \
-            --latest
